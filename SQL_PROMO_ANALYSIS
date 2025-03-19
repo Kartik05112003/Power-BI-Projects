@@ -1,0 +1,45 @@
+--- TOP 10 stores by incremental revenue
+
+SELECT store_id,
+       (after_quantity - before_quantity) * base_price AS incremental_revenue
+FROM fact_events
+ORDER BY 2 desc
+LIMIT 10
+
+
+--- BOTTOM 10 stores by incremental revenue
+
+SELECT store_id,
+       (after_quantity - before_quantity) * base_price AS incremental_revenue
+FROM fact_events
+ORDER BY 2 asc
+LIMIT 10
+
+--- CITY WISE PERFORMANCE
+
+SELECT a.city,
+       (b.after_quantity - b.before_quantity) * b.base_price AS incremental_revenue
+FROM fact_events as b
+LEFT JOIN dim_stores as a
+ON a.store_id=b.store_id
+ORDER BY 2 desc
+LIMIT 10
+
+--- TOP PERFORMING PROMO TYPES
+
+SELECT promo_type,
+       sum((after_quantity - before_quantity) * base_price) AS incremental_revenue
+FROM fact_events 
+GROUP BY 1
+ORDER BY 2 desc
+
+
+--- CATEGORY WISE PRODUCT SALES GROWTH
+
+SELECT a.category,
+ SUM((b.after_quantity - b.before_quantity) * b.base_price) AS incremental_revenue
+ FROM dim_products AS a
+ LEFT JOIN fact_events AS b
+ ON a.product_code=b.product_code
+ GROUP BY 1
+ ORDER BY 2 DESC
